@@ -19,13 +19,13 @@ type NodeWeightPair struct {
 	Weight float64
 }
 
-func CreateNode(nodeType int) *Node {
+func CreateNode(nodeType int) Node {
 
 	var parents []NodeWeightPair
 	var inputValue float64
 	var outputValue float64
 	//
-	if nodeType == 1 || nodeType == 3 || nodeType == 5 {
+	if nodeType == INPUT || nodeType == HIDDEN || nodeType == OUTPUT {
 		parents = make([]NodeWeightPair, 0)
 		inputValue = float64(-1)
 		outputValue = float64(-1)
@@ -35,12 +35,12 @@ func CreateNode(nodeType int) *Node {
 		outputValue = inputValue // no activation fn
 	}
 
-	return &Node{nodeType, parents, inputValue, outputValue}
+	return Node{nodeType, parents, inputValue, outputValue}
 }
 
 func (node *Node) SetInput(inputValue float64) {
 	// should only be called for input nodes
-	if node.Type != 1 { panic("cannot call node.SetInput on anything other than Input nodes") }
+	if node.Type != INPUT { panic("cannot call node.SetInput on anything other than Input nodes") }
 
 	node.inputValue = inputValue
 	// inputs have no activation, their input is their output
@@ -51,7 +51,7 @@ func (node *Node) SetInput(inputValue float64) {
 
 func (node *Node) Output() float64 {
 	// only hidden and output nodes need to sum their weighted inputs
-	if node.Type == 5 || node.Type == 3 {
+	if node.Type == HIDDEN || node.Type == OUTPUT {
 		weightedInputSum := 0.0
 		for i := range node.Parents {
 			weightedInputSum += node.Parents[i].Weight * node.Parents[i].Node.Output()

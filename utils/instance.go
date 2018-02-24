@@ -12,7 +12,7 @@ type Instance struct {
 	ClassArray []int
 }
 
-func LineToInstance(line string, delim string, numAttr int, numClassVars int) *Instance {
+func LineToInstance(line string, delim string, numAttr int, numClassVars int) Instance {
 	stringAttributes := strings.Split(line, delim)
 
 	attributes := make([]float64, numAttr)
@@ -30,5 +30,5 @@ func LineToInstance(line string, delim string, numAttr int, numClassVars int) *I
 		if err != nil { log.Fatal(err) }
 		i++
 	}
-	return &Instance{attributes, classVars}
+	return Instance{attributes, classVars}
 }

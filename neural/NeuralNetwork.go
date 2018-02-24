@@ -14,15 +14,8 @@ type NeuralNetwork struct {
 	hiddenNodes []Node
 	outputNodes []Node
 }
-// initialize NN what do we need to know?
-/*
-we'll limit ourselves to 1 hidden layer for now.
-we need to know the num nodes in each layer
-numInput = numAttr
-numHidden = ?
-numOutput = numClassVars
-*/
-func InitNeuralNetwork(numFeatures int, numHidden int, numClassVars int) *NeuralNetwork {
+
+func New(numFeatures int, numHidden int, numClassVars int) *NeuralNetwork {
 
 	inputNodes := make([]Node, numFeatures+1)
 	hiddenNodes := make([]Node, numHidden+1)
@@ -33,51 +26,35 @@ func InitNeuralNetwork(numFeatures int, numHidden int, numClassVars int) *Neural
 	// set up inputNodes
 	for i := 0 ; i < numFeatures; i++ {
 		// parent node will just be a bias node i think
-		inputNodes[i] = *CreateNode(INPUT)
+		inputNodes[i] = CreateNode(INPUT)
 	}
-	inputNodes[numFeatures] = *CreateNode(BIAS_TO_HIDDEN)
+	inputNodes[numFeatures] = CreateNode(BIAS_TO_HIDDEN)
 
 	// set up hiddenNodes
 	for j := 0 ; j < numHidden; j++ {
-		hiddenNodes[j] = *CreateNode(HIDDEN)
+		hiddenNodes[j] = CreateNode(HIDDEN)
 		// set up parents
 		for i := range inputNodes {
 			nodeWeightPair = NodeWeightPair{&inputNodes[i], rand.Float64()/float64(numFeatures)}
 			hiddenNodes[j].Parents = append(hiddenNodes[j].Parents, nodeWeightPair)
 		}
 	}
-	hiddenNodes[numHidden] = *CreateNode(BIAS_TO_OUTPUT)
+	hiddenNodes[numHidden] = CreateNode(BIAS_TO_OUTPUT)
 
 	// set up outputNodes
 	for k := range outputNodes {
-		outputNodes[k] = *CreateNode(OUTPUT)
+		outputNodes[k] = CreateNode(OUTPUT)
 		for j := range hiddenNodes {
 			nodeWeightPair = NodeWeightPair{&hiddenNodes[j], rand.Float64()/float64(numHidden)}
 			outputNodes[k].Parents = append(outputNodes[k].Parents, nodeWeightPair)
 		}
 	}
-	/*
-	for k := range outputNodes {
-		for j := range hiddenNodes {
-			fmt.Print(outputNodes[k].Parents[j].Weight, ", ")
-		}
-		fmt.Println()
-	}
-	for j := range hiddenNodes {
-		for i := range inputNodes {
-			fmt.Print(hiddenNodes)
-		}
-	}
-	*/
+
 	return &NeuralNetwork{inputNodes, hiddenNodes, outputNodes}
 }
 
-// utils.Instance should prob be an interface so that it can be like anything
-// then instead of accessing it directly we'll define some functions
-// that give us the data we need, but for now lets use the struct
+
 func (nn *NeuralNetwork) Train(trainingSet []utils.Instance) {
-	// future: break into feed-forward and back-propagation
-	// construct the weight relationships
 
 	// between input and hidden
 	// hidden nodes don't have parents btw
@@ -116,7 +93,6 @@ func (nn *NeuralNetwork) Train(trainingSet []utils.Instance) {
 			outputWeightedErrors[k] = weightedError
 		}
 
-		// TODO pls comment
 		hiddenWeightedErrors := make([]float64, len(nn.hiddenNodes))
 		for j := range nn.hiddenNodes {
 			layerWeightedErrorSum := 0.0
@@ -173,7 +149,7 @@ func (nn *NeuralNetwork) calculateOutputForInstance(instance utils.Instance) []f
 		// this will trigger output/hidden nodes to calc if they haven't yet :^)
 		output[i] = nn.outputNodes[i].Output()
 	}
-	//fmt.Println(output, instance.ClassArray)
+
 	return output
 }
 
