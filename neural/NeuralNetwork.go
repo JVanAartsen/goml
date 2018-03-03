@@ -86,7 +86,7 @@ func (nn *NeuralNetwork) Train(trainingSet []utils.Instance) {
 
 		outputWeightedErrors := make([]float64, len(nn.outputNodes))
 		for k := range nn.outputNodes {
-			outputError := float64(instance.ClassArray[k]) - output[k]
+			outputError := instance.ClassArray[k].(float64) - output[k]
 			// weighting the error by the derivative of the activaition function
 			// accounts for cost function being more "sensitive" to weight updates
 			weightedError := outputError * D_Sigmoid(nn.outputNodes[k].inputValue)
@@ -143,7 +143,7 @@ func (nn *NeuralNetwork) calculateOutputForInstance(instance utils.Instance) []f
 
 	output := make([]float64, len(nn.outputNodes))
 	for i, attributeValue := range instance.Attributes {
-		nn.inputNodes[i].SetInput(attributeValue)
+		nn.inputNodes[i].SetInput(attributeValue.(float64))
 	}
 	for i := range nn.outputNodes {
 		// this will trigger output/hidden nodes to calc if they haven't yet :^)
@@ -175,7 +175,7 @@ func (nn *NeuralNetwork) Test(testSet []utils.Instance) {
 		prediction := nn.Classify(instance)
 		var actual int
 		for c, val := range instance.ClassArray {
-			if val == 1 { actual = c }
+			if val == float64(1) { actual = c }
 		}
 		if prediction == actual {
 			correct++

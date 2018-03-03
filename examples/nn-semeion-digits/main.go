@@ -1,9 +1,6 @@
 package main
 
 import (
-	"os"
-	"bufio"
-	"log"
 	"github.com/jvanaartsen/goml/utils"
 	"github.com/jvanaartsen/goml/neural"
 )
@@ -16,19 +13,9 @@ const NUM_CLASS_VARS = 10
 
 func main() {
 
-	file, err := os.Open("/Users/jovanaartsen/play/datasets/semeion-digits.txt")
-	if err != nil {
-		log.Fatal(err)
-	}
+	datasetFactory := utils.DatasetFactory{"float", " ", NUM_ATTRIBUTES, NUM_CLASS_VARS}
 
-	var set []utils.Instance
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		instance := utils.LineToInstance(scanner.Text(), " ", NUM_ATTRIBUTES, NUM_CLASS_VARS)
-		set = append(set, instance)
-	}
-
+	set := datasetFactory.FileToSet("/Users/jovanaartsen/play/datasets/semeion-digits.txt")
 
 	trainingSet, testSet := utils.TrainTestSplit(utils.Shuffle(set), 0.2)
 
